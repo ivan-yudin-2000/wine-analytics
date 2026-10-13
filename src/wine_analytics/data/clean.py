@@ -19,8 +19,11 @@ before = len(df)
 df = df.drop_duplicates()
 print(f"Удалено дубликатов: {before - len(df)}")
 
-# 4. Извлекаем год урожая из title (первые 4 цифры подряд)
-df["vintage_year"] = df["title"].str.extract(r"(\d{4})")
+# 4. Извлекаем год урожая из title: берём САМЫЙ ПОЗДНИЙ год вида 19xx/20xx.
+# Кроме года урожая в названии бывают год основания винодельни ("Hazlitt 1852 Vineyards 2007")
+# и год посадки лоз ("Domaine Dupré 2011 Vignes de 1935") — они всегда раньше урожая
+years = df["title"].str.findall(r"\b(19\d{2}|20\d{2})\b")
+df["vintage_year"] = years.apply(lambda ys: max(int(y) for y in ys) if ys else pd.NA)
 df["vintage_year"] = pd.to_numeric(df["vintage_year"], errors="coerce")
 
 # Если год вне реального диапазона, заменяем его на пустое значение

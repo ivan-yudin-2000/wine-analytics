@@ -1,6 +1,6 @@
 import pandas as pd
 from pathlib import Path
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 import os
 
@@ -23,6 +23,10 @@ engine = create_engine(connection_string)
 df = pd.read_csv(CLEAN_PATH, index_col=0)
 print(f"Загружаем в базу {len(df)} строк...")
 
-# Заливаем таблицу в Postgres
-df.to_sql("wines", engine, if_exists="replace", index=False)
+# Заливаем таблицу в Postgres, сохраняя исходный id отзыва колонкой "id"
+df.to_sql("wines", engine, if_exists="replace", index=True, index_label="id")
+
+# Делаем id первичным ключом (to_sql сам ключи не создаёт)
+with engine.begin() as conn:
+    conn.execute(text("ALTER TABLE wines ADD PRIMARY KEY (id)"))
 print("Готово. Таблица 'wines' создана/обновлена в базе wine_analytics.")
