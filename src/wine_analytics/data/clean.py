@@ -33,7 +33,7 @@ years = df["title"].str.findall(r"\b(19\d{2}|20\d{2})\b")
 df["vintage_year"] = years.apply(lambda ys: max(int(y) for y in ys) if ys else pd.NA)
 df["vintage_year"] = pd.to_numeric(df["vintage_year"], errors="coerce")
 
-# Если год вне реального диапазона, заменяем его на пустое значение
+# Год раньше 1900 или позже 2017 (год сбора данных) — точно не год урожая, оставляем пустым
 mask = (df["vintage_year"] < 1900) | (df["vintage_year"] > 2017)
 df.loc[mask, "vintage_year"] = pd.NA
 

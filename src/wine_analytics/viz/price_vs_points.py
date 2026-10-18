@@ -10,7 +10,6 @@ from sqlalchemy import create_engine
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 FIGURE_PATH = PROJECT_ROOT / "reports" / "figures" / "price_vs_points.png"
 
-# Подключаемся к базе так же, как в load_to_postgres.py
 load_dotenv(PROJECT_ROOT / ".env")
 db_user = os.getenv("DB_USER")
 db_password = os.getenv("DB_PASSWORD")
@@ -32,7 +31,7 @@ print(f"Пирсон, логарифм цены: {r_log:.2f}")
 # Две панели с одними и теми же данными, отличается только шкала цены
 fig, (ax_raw, ax_log) = plt.subplots(1, 2, figsize=(12, 5), sharey=True)
 
-# alpha — прозрачность: где вин много, точки накладываются и цвет становится темнее
+# Полупрозрачные точки: где вин много, они накладываются и цвет становится темнее
 ax_raw.scatter(df["price"], df["points"], s=5, alpha=0.05)
 ax_raw.set_title(f"Цена как есть: r = {r_raw:.2f}")
 ax_raw.set_xlabel("Цена, $")
